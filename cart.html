@@ -403,23 +403,19 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Select all product boxes
+            
             const productBoxes = document.querySelectorAll('.product-box');
             const totalPriceElement = document.getElementById('total-price');
 
             productBoxes.forEach(box => {
                 box.addEventListener('click', (e) => {
-                    // Prevent triggering if user clicks specifically on a select dropdown
-                    // (so the dropdown can open without the box toggling logic interfering)
+                    
                     if (e.target.tagName === 'SELECT') return;
-
-                    // 1. Remove 'active' class from all boxes
+                    
                     productBoxes.forEach(b => b.classList.remove('active'));
-
-                    // 2. Add 'active' class to the clicked box
+                    
                     box.classList.add('active');
 
-                    // 3. Update the Total Price in the footer
                     const price = box.getAttribute('data-price');
                     totalPriceElement.textContent = price;
                 });
