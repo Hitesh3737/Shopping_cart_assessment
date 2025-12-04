@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bundle & Save Widget</title>
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fdfdfd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .bundle-container {
+            width: 100%;
+            max-width: 450px;
+            background: #fff;
+            padding: 20px;
+        }
+
+        h3.title {
+            text-align: center;
+            color: #007F61;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .product-box {
+            border: 1px solid #c8c8c8;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            padding: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* State: Expanded/Selected */
+        .product-box.active {
+            border: 2px solid #007F61;
+            background-color: #F4FBF9;
+        }
+
+        .box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .custom-radio {
+            height: 18px;
+            width: 18px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-box.active .custom-radio {
+            border-color: #007F61;
+            background-color: #007F61;
+        }
+
+        /* The inner white dot for radio */
+        .custom-radio::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .product-box.active .custom-radio::after {
+            display: block;
+        }
+
+        .pair-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .pair-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 12px;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        
+        .header-right {
+            text-align: right;
+        }
+
+        .discount-tag {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        
+        .most-popular-tag {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #007F61; 
+            color: #007F61;
+            background: transparent;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 8px;
+        }
+        
+        /* Adjust alignment for the Most Popular box */
+        .product-box[data-id="2"] .header-right {
+            margin-top: 15px; 
+        }
+
+        
+        .options-container {
+            display: none; 
+            margin-top: 15px;
+            margin-left: 33px; 
+        }
+
+        .product-box.active .options-container {
+            display: block;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .option-label {
+            font-size: 12px;
+            width: 20px;
+        }
+
+        select {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .size-select, .color-select {
+            flex: 1; 
+        }
+
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .shipping-text {
+            color: #007F61;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 15px;
+            float: left;
+        }
+        
+        .total-text {
+            float: right;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .add-to-cart-btn {
+            background-color: #007F61;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #006049;
+        }
+        
+        .powered-by {
+            text-align: right;
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        
+        @media (max-width: 400px) {
+            .header-left {
+                gap: 10px;
+            }
+            .pair-title {
+                font-size: 14px;
+            }
+            .options-container {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bundle-container">
+        <h3 class="title">Bundle & Save</h3>
+
+        
+        
+        <div class="product-box" data-id="1" data-price="195.00">
+            <div class="box-header">
+                <div class="header-left">
+                    <div class="custom-radio"></div>
+                    <div>
+                        <div class="pair-title">1 Pair</div>
+                        <div class="pair-price">DKK 195.00</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="discount-tag">50% OFF</div>
+                </div>
+            </div>
+            
+            
+            <div class="options-container">
+                <div class="option-row">
+                    <span class="option-label">&nbsp;</span>
+                    <label style="font-size:12px; flex:1">Size</label>
+                    <label style="font-size:12px; flex:1">Colour</label>
+                </div>
+                <div class="option-row">
+                    <span class="option-label">#1</span>
+                    <select class="size-select">
+                        <option>S</option>
+                        <option>M</option>
+                        <option>L</option>
+                    </select>
+                    <select class="color-select">
+                        <option>Colour</option>
+                        <option>Black</option>
+                        <option>White</option>
+                    </select>
+                    <br>
+                    
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="product-box active" data-id="2" data-price="345.00">
+            <div class="most-popular-tag">Most Popular</div>
+            <div class="box-header">
+                <div class="header-left">
+                    <div class="custom-radio"></div>
+                    <div>
+                        <div class="pair-title">2 Pair</div>
+                        <div class="pair-price">DKK 345.00 <span class="old-price">DKK 195.00</span></div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="discount-tag">40% OFF</div>
+                </div>
+            </div>
+
+            
+            <div class="options-container">
+                <div class="option-row">
+                    <span class="option-label">&nbsp;</span>
+                    <label style="font-size:12px; flex:1">Size</label>
+                    <label style="font-size:12px; flex:1">Colour</label>
+                </div>
+                <div class="option-row">
+                    <span class="option-label">#1</span>
+                    <select class="size-select">
+                        <option>S</option>
+                        <option>M</option>
+                        <option>L</option>
+                    </select>
+                    <select class="color-select">
+                        <option>Colour</option>
+                        <option>Red</option>
+                        <option>Blue</option>
+                    </select>
+                </div>
+                <div class="option-row">
+                    <span class="option-label">#2</span>
+                    <select class="size-select">
+                        <option>S</option>
+                        <option>M</option>
+                        <option>L</option>
+                    </select>
+                    <select class="color-select">
+                        <option>Colour</option>
+                        <option>Red</option>
+                        <option>Blue</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="product-box" data-id="3" data-price="528.00">
+            <div class="box-header">
+                <div class="header-left">
+                    <div class="custom-radio"></div>
+                    <div>
+                        <div class="pair-title">3 Pair</div>
+                        <div class="pair-price">DKK 528.00</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="discount-tag">60% OFF</div>
+                </div>
+            </div>
+
+            
+            <div class="options-container">
+                <div class="option-row">
+                    <span class="option-label">&nbsp;</span>
+                    <label style="font-size:12px; flex:1">Size</label>
+                    <label style="font-size:12px; flex:1">Colour</label>
+                </div>
+                <div class="option-row">
+                    <span class="option-label">#1</span>
+                    <select class="size-select">
+                        <option>S</option>
+                        <option>M</option>
+                        <option>L</option>
+                    </select>
+                    <select class="color-select">
+                        <option>Colour</option>
+                        <option>Black</option>
+                    </select>
+                </div>
+                <div class="option-row">
+                    <span class="option-label">#2</span>
+                    <select class="size-select">
+                        <option>S</option>
+                        <option>M</option>
+                        <option>L</option>
+                    </select>
+                    <select class="color-select">
+                        <option>Colour</option>
+                        <option>Black</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="footer clearfix">
+            <div class="shipping-text">Free 2 Day Shipping</div>
+            <div class="total-text">Total: DKK <span id="total-price">345.00</span></div>
+        </div>
+        
+        <button class="add-to-cart-btn">+ Add to Cart</button>
+        <div class="powered-by">© Powered by Pumper</div>
+
+    </div>
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Select all product boxes
+            const productBoxes = document.querySelectorAll('.product-box');
+            const totalPriceElement = document.getElementById('total-price');
+
+            productBoxes.forEach(box => {
+                box.addEventListener('click', (e) => {
+                    // Prevent triggering if user clicks specifically on a select dropdown
+                    // (so the dropdown can open without the box toggling logic interfering)
+                    if (e.target.tagName === 'SELECT') return;
+
+                    // 1. Remove 'active' class from all boxes
+                    productBoxes.forEach(b => b.classList.remove('active'));
+
+                    // 2. Add 'active' class to the clicked box
+                    box.classList.add('active');
+
+                    // 3. Update the Total Price in the footer
+                    const price = box.getAttribute('data-price');
+                    totalPriceElement.textContent = price;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
